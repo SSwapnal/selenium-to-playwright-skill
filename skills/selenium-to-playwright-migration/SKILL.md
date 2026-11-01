@@ -116,3 +116,4 @@ For each migration, provide:
 
 - [Selenium-to-Playwright API mapping](./references/selenium-playwright-mapping.md)
 - [Migration checklist and validation report](./references/migration-checklist.md)
+- [Migration notes: concepts with no one-to-one mapping](./references/mapping-notes.md)
