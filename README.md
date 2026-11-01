@@ -5,6 +5,8 @@ A beginner-friendly portfolio project demonstrating:
 2. Playwright + TypeScript
 3. An AI migration assistant guided by a reusable Agent Skill (`SKILL.md`)
 
+**Result:** an AI coding agent, guided by the skill, migrated all 5 Selenium tests to Playwright. All 5 pass on the live site. See [docs/ai-migration-report.md](docs/ai-migration-report.md).
+
 Application: https://www.saucedemo.com/
 
 ## Architecture
@@ -16,13 +18,18 @@ selenium-java/                 Original Java + TestNG suite
   src/test/java/tests/          Login and shopping tests
 playwright-ts/                 Equivalent TypeScript suite
   pages/                        Page Object Model
-  tests/                        Login and shopping tests
+  tests/                        Login and shopping tests (hand-written)
+  tests/ai-migrated/            Same 5 tests, migrated by an AI agent using the skill
 skills/selenium-to-playwright-migration/
   SKILL.md                      Skill metadata + migration workflow
   references/
     selenium-playwright-mapping.md
     migration-checklist.md       Detailed mappings + validation checklist
-agent/migrate.py               LLM-powered migration assistant
+    mapping-notes.md             Concepts with no one-to-one mapping
+.claude/skills/                Link to the skill, so coding agents discover it
+agent/migrate.py               LLM-powered migration assistant (API script)
+docs/ai-migration-report.md    What the agent migrated, and the executed results
+.github/workflows/tests.yml    CI: runs the Selenium and Playwright suites
 ```
 
 ## Prerequisites
@@ -36,7 +43,7 @@ agent/migrate.py               LLM-powered migration assistant
 
 ```bash
 cd selenium-java
-mvn clean test
+mvn clean test              # HEADLESS=true mvn clean test  to hide the browser
 ```
 
 Selenium 4 uses Selenium Manager to obtain a compatible browser driver in normal setups. If your environment blocks driver downloads, configure ChromeDriver manually or allow the download.
@@ -57,7 +64,28 @@ npx playwright test --ui
 npx playwright show-report
 ```
 
-## 3. Run the AI migration assistant
+## 3. Migrate with an AI coding agent (uses the skill)
+
+Coding agents such as Claude Code, GitHub Copilot and Codex read Agent Skills from the repository. Open the repo root in the agent and ask:
+
+```text
+Migrate the Selenium tests in selenium-java to Playwright.
+Put the migrated specs in playwright-ts/tests/ai-migrated/ and do not change any existing Playwright files.
+Save your migration report as docs/ai-migration-report.md.
+```
+
+The agent matches the request to the skill's `description` and loads `SKILL.md`. It then reads the Java sources and writes the specs, runs `tsc` and `npx playwright test`, and writes the report. Only the name and description are loaded up front; the reference files are read only when needed.
+
+Results of the run committed here:
+
+| Step | Result |
+|---|---|
+| Skill loaded automatically | Yes (`selenium-to-playwright-migration`) |
+| Tests migrated | 5 of 5, with all assertions kept |
+| `npx tsc --noEmit` | Passed |
+| `npx playwright test tests/ai-migrated` | 5 passed |
+
+## 4. Run the AI migration assistant (API script)
 
 The assistant reads the skill, a Selenium source file, and asks an LLM to produce a TypeScript Playwright test. It does not silently overwrite your existing tests.
 
@@ -96,20 +124,7 @@ The migration assistant is a practical starter, not a guarantee of semantic equi
 | Remove product | Yes | Yes |
 | Checkout happy path | Yes | Yes |
 
-## Push this project to your GitHub
-
-Create an empty GitHub repository named `saucedemo-ai-test-migration`, then run from this folder:
-
-```bash
-git init
-git add .
-git commit -m "Add Selenium to Playwright AI migration project"
-git branch -M main
-git remote add origin https://github.com/YOUR_GITHUB_USERNAME/saucedemo-ai-test-migration.git
-git push -u origin main
-```
-
-Do not commit API keys. The `.gitignore` excludes `.env` and Python virtual environments.
+Never commit API keys. The `.gitignore` excludes `.env` and Python virtual environments.
 
 ## Interview explanation
 
