@@ -126,6 +126,6 @@ The migration assistant is a practical starter, not a guarantee of semantic equi
 
 Never commit API keys. The `.gitignore` excludes `.env` and Python virtual environments.
 
-## Interview explanation
+##  Explanation
 
 “I built an end-to-end automation migration demo around SauceDemo. First, I created the source regression suite using Selenium, Java, TestNG, and Page Objects. Then I implemented the same user journeys in Playwright with TypeScript. Finally, I wrote a reusable Agent Skill that gives an AI agent explicit migration rules, and a small Python runner that passes the skill and Java source to an LLM. The generated TypeScript is reviewed and executed, and I compare the scenarios and assertions across both suites. The goal is to accelerate repetitive migration work while keeping a human review and test execution as quality gates.”
